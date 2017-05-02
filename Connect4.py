@@ -21,7 +21,7 @@ class Game(object):
 
         while self.players[0] is None:
 
-            choice = input("Type 1 or 2 : ")
+            choice = int(input("Type 1 or 2 : "))
 
             if choice == 1:
                 self.players[0] = AIPlayer(self.colors[0])
