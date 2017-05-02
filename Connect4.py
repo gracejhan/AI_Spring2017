@@ -243,7 +243,7 @@ class AIPlayer(Player):
     def move(self, board):
         print("We are {0}".format(self.color))
         print("What solver will you choose? ")
-        solveOption = input("Type 1 for Search and 2 for Rules : ")
+        solveOption = int(input("Type 1 for Search and 2 for Rules : "))
 
         if solveOption == 1:
             print("Using search algorithm...")
