@@ -15,7 +15,7 @@ class Solver(object):
 
         self.board = [x[:] for x in board]
 
-    def bestMoveSearch(self, depth, board, currentPlayer):
+    def bestMoveSearch(self, depth, board, currentPlayer, phase):
 
         # return the best column number and the corresponding alpha value using search (option 1)
 
@@ -24,12 +24,16 @@ class Solver(object):
         else:
             enemyPlayer = self.colors[0]
 
+        currPhase = phase
         best_alpha = -999999
         best_move = None
         start = time()
 
         columns = [3, 2, 4, 1, 5, 0, 6]
-        legal_moves = {3: 5, 2: 1, 4: 1, 1: 0, 5: 0, 0: -1, 6: -1}  # mid columns have slightly better start
+        if currPhase <= 6:
+            legal_moves = {3: -994, 2: -999, 4: -999, 1: -999, 5: -999, -999: -1004, 6: -1004}
+        else:
+            legal_moves = {3: -999, 2: -999, 4: -999, 1: -999, 5: -999, 0: -999, 6: -999}
 
         for column in columns:  # 0~6
             print("Searching column number : ", end="")
@@ -88,13 +92,14 @@ class Solver(object):
                 break
         return bestMoveValue
 
-    def bestMoveRule(self, board, currentPlayer):
+    def bestMoveRule(self, board, currentPlayer, phase):
         """
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
             enemyPlayer = self.colors[0]
         """
+        # currPhase = phase
 
         legal_moves = {}
 

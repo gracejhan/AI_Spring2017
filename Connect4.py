@@ -73,7 +73,7 @@ class Game(object):
             self.finished = True
             return
 
-        move = player.move(self.board)
+        move = player.move(self.board, self.phase)
 
         for i in range(6):
             if self.board[i][move] == ' ':
@@ -216,7 +216,7 @@ class Player(object):
         self.type = "Human"
         self.color = color
 
-    def move(self, state):
+    def move(self, state, phase):
         print("Enemy is {0}".format(self.color))
         column = None
         while column is None:
@@ -235,12 +235,12 @@ class AIPlayer(Player):
 
     depth = None
 
-    def __init__(self, color, depth=8):
+    def __init__(self, color, depth=6):
         self.type = "Computer"
         self.color = color
         self.depth = depth
 
-    def move(self, board):
+    def move(self, board, phase):
         print("We are {0}".format(self.color))
         print("What solver will you choose? ")
         solveOption = int(input("Type 1 for Search and 2 for Rules : "))
@@ -248,18 +248,23 @@ class AIPlayer(Player):
         if solveOption == 1:
             print("Using search algorithm...")
             m = Solver(board)
-            bestMove, value = m.bestMoveSearch(self.depth, board, self.color)
+            if phase <= 6:
+                bestMove, value = m.bestMoveSearch(self.depth, board, self.color, phase)
+            elif phase <= 12:
+                bestMove, value = m.bestMoveSearch(self.depth + 1, board, self.color, phase)
+            else:
+                bestMove, value = m.bestMoveSearch(self.depth + 2, board, self.color, phase)
             return bestMove
 
         elif solveOption == 2:
             m = Solver(board)
-            bestMove = m.bestMoveRule(board, self.color)
+            bestMove = m.bestMoveRule(board, self.color, phase)
             return bestMove
 
         else:
             print("Error, using search algorithm...")
             m = Solver(board)
-            bestMove, value = m.bestMoveSearch(self.depth, board, self.color)
+            bestMove, value = m.bestMoveSearch(self.depth, board, self.color, phase)
             return bestMove
 
 
