@@ -122,7 +122,7 @@ class Solver(object):
             point += connectThree * 1000
             point += connectTwo * 100
 
-        if enemyConnectFour :
+        if enemyConnectFour :       #수정 필요, depth =2까지 봐야 구현 가능할듯
             point = point - 5000
 
         if enemyConnectThree:

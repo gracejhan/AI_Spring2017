@@ -1,4 +1,5 @@
-import random
+from __future__ import print_function
+from time import time
 
 
 class Solver(object):
@@ -14,7 +15,7 @@ class Solver(object):
 
         self.board = [x[:] for x in board]
 
-    def bestMoveSearch(self, depth, board, currentPlayer):
+    def bestMoveSearch(self, depth, board, currentPlayer, phase):
 
         # return the best column number and the corresponding alpha value using search (option 1)
 
@@ -23,33 +24,50 @@ class Solver(object):
         else:
             enemyPlayer = self.colors[0]
 
-        legal_moves = {}
-
-        for column in range(7):  # 0~6
-            if self.isLegalMove(column, board):
-                temp = self.makeMove(board, column, currentPlayer)
-                legal_moves[column] = -self.search(depth, temp, enemyPlayer)  # puts in the alpha values of each choice
-
+        currPhase = phase
         best_alpha = -999999
         best_move = None
+        start = time()
 
-        moves = legal_moves.items()
+        columns = [3, 2, 4, 1, 5, 0, 6]
+        if currPhase <= 6:
+            legal_moves = {3: -994, 2: -999, 4: -999, 1: -999, 5: -999, 0: -1004, 6: -1004}
+        else:
+            legal_moves = {3: -999, 2: -999, 4: -999, 1: -999, 5: -999, 0: -999, 6: -999}
 
-        random.shuffle(list(moves))
+        for column in columns:  # 0~6
+            print("Searching column number : ", end="")
+            print(column + 1)
 
-        for move, alpha in moves:
+            if not self.isLegalMove(column, board):
+                legal_moves[column] = -9999999
+
+            if self.isLegalMove(column, board) and time() - start < 100:
+                temp = self.makeMove(board, column, currentPlayer)
+                legal_moves[column] += -self.search(depth, -999999, 999999, temp, enemyPlayer)  # puts in the alpha values of each choice
+
+            print("Alpha : ", end="")
+            print(legal_moves.items())
+            print("Time passed : ", end="")
+            print(time() - start)
+            if time() - start > 119:
+                break
+
+        for move, alpha in legal_moves.items():
             if alpha >= best_alpha:
                 best_alpha = alpha
                 best_move = move
 
         return best_move, best_alpha
 
-    def search(self, depth, board, currentPlayer):
+    def search(self, depth, alpha, beta, board, currentPlayer):
 
-        # return the alpha value
+        # return the max value
 
+        columns = [3, 2, 4, 1, 5, 0, 6]
         legal_moves = []
-        for i in range(7):
+
+        for i in columns:
             if self.isLegalMove(i, board):
                 temp = self.makeMove(board, i, currentPlayer)
                 legal_moves.append(temp)
@@ -62,21 +80,26 @@ class Solver(object):
         else:
             enemyPlayer = self.colors[0]
 
-        alpha = -99999999
+        bestMoveValue = -9999999
 
         for child in legal_moves:
             if child is None:
                 print("No children")
-            alpha = max(alpha, -self.search(depth - 1, child, enemyPlayer))
-        return alpha
+            currValue = -self.search(depth - 1, -beta, -alpha, child, enemyPlayer)
+            bestMoveValue = max(bestMoveValue, currValue)
+            alpha = max(alpha, currValue)
+            if alpha >= beta:
+                break
+        return bestMoveValue
 
-    def bestMoveRule(self, board, currentPlayer):
-
+    def bestMoveRule(self, board, currentPlayer, phase):
+        """
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
             enemyPlayer = self.colors[0]
-
+        """
+        # currPhase = phase
 
         legal_moves = {}
 
@@ -89,8 +112,6 @@ class Solver(object):
         best_move = None
 
         moves = legal_moves.items()
-
-        random.shuffle(list(moves))
 
         for move, point in moves:
             if point >= best_point:
@@ -122,8 +143,8 @@ class Solver(object):
             point += connectThree * 1000
             point += connectTwo * 100
 
-        if enemyConnectFour :
-            point = 0
+        if enemyConnectFour :       #수정 필요, depth =2까지 봐야 구현 가능할듯
+            point = point - 5000
 
         if enemyConnectThree:
             point = point - 1000
@@ -157,7 +178,7 @@ class Solver(object):
 
         # return a temporary state after the move is updated
 
-        temp = [x[:] for x in board]            #copy
+        temp = [x[:] for x in board]
         for i in range(6):
             if temp[i][column] == ' ':
                 temp[i][column] = color
@@ -165,22 +186,24 @@ class Solver(object):
 
     def make_move_rulebased(self, board, column, color, local_point):
 
-        local_point = 0
+        self.local_point = 0
 
         temp = [x[:] for x in board]
         for i in range(6):
             if temp[i][column] == ' ':
                 temp[i][column] = color
                 if i%2 == 0:    #odd row advantage
-                    local_point += 30
+                    self.local_point += 30
                 if column == 4:
-                    local_point += 50
+                    self.local_point += 50
                 elif column == 0 or column == 6:
-                    local_point += 40
+                    self.local_point += 40
                 else:
-                    local_point = 0
-                return temp, local_point
+                    self.local_point = 0
 
+                self.local_point = local_point
+
+                return temp
 
     def value(self, board, tile):
 
@@ -203,7 +226,7 @@ class Solver(object):
         if enemyConnectFour > 0:
             return -10000
         else:
-            return connectFour * 10000 + connectThree * 100 + connectTwo
+            return connectFour * 10000 + connectThree * 1000 + connectTwo
 
     def checkForStreak(self, board, tile, streak):
 
@@ -214,13 +237,15 @@ class Solver(object):
         for i in range(6):
             for j in range(7):
 
-                if board[i][j].lower() == tile.lower():
+                if board[i][j] == tile:
                     # vertical check
                     count += self.verticalCheck(i, j, board, streak)
                     # horizontal check
                     count += self.horizontalCheck(i, j, board, streak)
                     # diagonal check /, \
                     count += self.diagonalCheck(i, j, board, streak)
+                else:
+                    return count
         return count
 
     def verticalCheck(self, row, column, board, streak):
