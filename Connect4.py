@@ -235,7 +235,7 @@ class AIPlayer(Player):
 
     depth = None
 
-    def __init__(self, color, depth=6):
+    def __init__(self, color, depth=8):
         self.type = "Computer"
         self.color = color
         self.depth = depth

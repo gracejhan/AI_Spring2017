@@ -1,4 +1,5 @@
-import random
+from __future__ import print_function
+from time import time
 
 
 class Solver(object):
@@ -23,33 +24,46 @@ class Solver(object):
         else:
             enemyPlayer = self.colors[0]
 
-        legal_moves = {}
-
-        for column in range(7):  # 0~6
-            if self.isLegalMove(column, board):
-                temp = self.makeMove(board, column, currentPlayer)
-                legal_moves[column] = -self.search(depth, temp, enemyPlayer)  # puts in the alpha values of each choice
-
         best_alpha = -999999
         best_move = None
+        start = time()
 
-        moves = legal_moves.items()
+        columns = [3, 2, 4, 1, 5, 0, 6]
+        legal_moves = {3: 5, 2: 1, 4: 1, 1: 0, 5: 0, 0: -1, 6: -1}  # mid columns have slightly better start
 
-        random.shuffle(list(moves))
+        for column in columns:  # 0~6
+            print("Searching column number : ", end="")
+            print(column + 1)
 
-        for move, alpha in moves:
+            if not self.isLegalMove(column, board):
+                legal_moves[column] = -9999999
+
+            if self.isLegalMove(column, board) and time() - start < 100:
+                temp = self.makeMove(board, column, currentPlayer)
+                legal_moves[column] += -self.search(depth, -999999, 999999, temp, enemyPlayer)  # puts in the alpha values of each choice
+
+            print("Alpha : ", end="")
+            print(legal_moves.items())
+            print("Time passed : ", end="")
+            print(time() - start)
+            if time() - start > 119:
+                break
+
+        for move, alpha in legal_moves.items():
             if alpha >= best_alpha:
                 best_alpha = alpha
                 best_move = move
 
         return best_move, best_alpha
 
-    def search(self, depth, board, currentPlayer):
+    def search(self, depth, alpha, beta, board, currentPlayer):
 
-        # return the alpha value
+        # return the max value
 
+        columns = [3, 2, 4, 1, 5, 0, 6]
         legal_moves = []
-        for i in range(7):
+
+        for i in columns:
             if self.isLegalMove(i, board):
                 temp = self.makeMove(board, i, currentPlayer)
                 legal_moves.append(temp)
@@ -62,13 +76,17 @@ class Solver(object):
         else:
             enemyPlayer = self.colors[0]
 
-        alpha = -99999999
+        bestMoveValue = -9999999
 
         for child in legal_moves:
             if child is None:
                 print("No children")
-            alpha = max(alpha, -self.search(depth - 1, child, enemyPlayer))
-        return alpha
+            currValue = -self.search(depth - 1, -beta, -alpha, child, enemyPlayer)
+            bestMoveValue = max(bestMoveValue, currValue)
+            alpha = max(alpha, currValue)
+            if alpha >= beta:
+                break
+        return bestMoveValue
 
     def bestMoveRule(self, board, currentPlayer):
         """
@@ -89,8 +107,6 @@ class Solver(object):
         best_move = None
 
         moves = legal_moves.items()
-
-        random.shuffle(list(moves))
 
         for move, point in moves:
             if point >= best_point:
