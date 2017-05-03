@@ -28,7 +28,7 @@ class Game(object):
                 self.players[1] = Player(self.colors[1])
 
             elif choice == 2:
-                self.players[0] = Player(self.colors[0], 5)
+                self.players[0] = Player(self.colors[0])
                 self.players[1] = AIPlayer(self.colors[1])
 
             else:
@@ -235,7 +235,7 @@ class AIPlayer(Player):
 
     depth = None
 
-    def __init__(self, color, depth=5):
+    def __init__(self, color, depth=6):
         self.type = "Computer"
         self.color = color
         self.depth = depth
