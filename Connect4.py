@@ -24,12 +24,12 @@ class Game(object):
             choice = input("Type 1 or 2 : ")
 
             if choice == 1:
-                self.players[0] = AIPlayer(self.colors[0])
+                self.players[0] = AIPlayer(self.colors[0],5)
                 self.players[1] = Player(self.colors[1])
 
             elif choice == 2:
-                self.players[0] = Player(self.colors[0], 5)
-                self.players[1] = AIPlayer(self.colors[1])
+                self.players[0] = Player(self.colors[0])
+                self.players[1] = AIPlayer(self.colors[1],5)
 
             else:
                 print("Error, try again")
@@ -224,7 +224,7 @@ class Player(object):
                 choice = int(input("Enter a move (by column number): ")) - 1
             except ValueError:
                 choice = None
-            if 0 <= choice <= 6:
+            if 0 <= choice <= 6:        # modify to 1 through 7 later
                 column = choice
             else:
                 print("Invalid choice, try again")

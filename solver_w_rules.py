@@ -123,7 +123,7 @@ class Solver(object):
             point += connectTwo * 100
 
         if enemyConnectFour :
-            point = 0
+            point = point - 5000
 
         if enemyConnectThree:
             point = point - 1000
