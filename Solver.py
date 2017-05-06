@@ -93,20 +93,24 @@ class Solver(object):
         return bestMoveValue
 
     def bestMoveRule(self, board, currentPlayer, phase):
-        """
+
+
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
             enemyPlayer = self.colors[0]
-        """
-        # currPhase = phase
 
-        legal_moves = {}
+        currPhase = phase
+
+        legal_moves = {}        #string?
 
         for column in range(7):  # 0~6
             if self.isLegalMove(column, board):
                 temp = self.make_move_rulebased(board, column, currentPlayer, local_point=0)
-                legal_moves[column] = self.rule(temp, currentPlayer)  # RULE BASED ALGORITHM
+                legal_moves[column] = self.rule_myself(temp, currentPlayer)  # RULE BASED ALGORITHM
+                temp2 = self.make_move_rulebased(temp, column, enemyPlayer, temp.local_point)   #depth 2
+                legal_moves[column] = self.rule_enemy(temp2, enemyPlayer)
+
 
         best_point = -999999
         best_move = None
@@ -118,9 +122,27 @@ class Solver(object):
                 best_point = point
                 best_move = move
 
+
+        # best_point를 스트링으로 변환해서 각 자리수 0인지 아닌지로 구분.
+        if best_point / 100000000 != 0:
+            print("Rule 1: If there is a winning move, take it")
+        elif best_point < 0:
+            print("Rule 2: If the opponent has a winning move, interfere it.")
+        elif best_point < 10000000 and best_point > 9999:
+            print("Rule 3: If there is a move connecting three, take it.")
+        elif best_point :
+            print("Rule 4: Take the center square over edges and corners.")
+        elif best_point :
+            print("Rule 5: If the move takes place at odd row, take it over even row.")
+        elif best_point:
+            print("Rule 6: Take the corner square over edges.")
+
+        # hidden rule : if current move makes a chance for opponent to connect four, do not.
+
+
         return best_move
 
-    def rule(self, board, tile):
+    def rule_myself(self, board, tile):
 
         # return the point value
         # MAKE THIS PART FOR RULE BASED DECISION MAKING
@@ -139,15 +161,15 @@ class Solver(object):
         enemyConnectThree = self.checkForStreak(board, enemyTile, 3)
 
         if connectFour or connectThree or connectTwo:
-            point += connectFour * 10000
-            point += connectThree * 1000
+            point += connectFour * 1000000000
+            point += connectThree * 10000
             point += connectTwo * 100
 
-        if enemyConnectFour :       #수정 필요, depth =2까지 봐야 구현 가능할듯
-            point = point - 5000
+      ##  if enemyConnectFour :       #수정 필요, depth =2까지 봐야 구현 가능할듯
+      ##      point = point - 5000
 
-        if enemyConnectThree:
-            point = point - 1000
+      ##  if enemyConnectThree:
+      ##      point = point - 1000
 
 
         # 새로 들어오는 점이 홀수 열이면 가산점,
@@ -156,6 +178,29 @@ class Solver(object):
 
 
         return point
+
+    def rule_enemy(self, board, tile):
+
+        # return the point value
+        # MAKE THIS PART FOR RULE BASED DECISION MAKING
+
+        if tile == self.colors[0]:
+            currentPlayer = self.colors[1]
+        else:
+            currentPlayer = self.colors[0]
+
+        point = self.point
+
+        enemy_connectFour = self.checkForStreak(board, tile, 4)       #여기에 board라고 해도 맞는건가
+
+        if enemy_connectFour:
+            point = point - 999999      # 점수 수정 필요
+
+
+
+        return point
+
+
 
     def isLegalMove(self, column, board):
 
