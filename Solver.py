@@ -102,45 +102,96 @@ class Solver(object):
 
         currPhase = phase
 
-        legal_moves = {}        #string?
+        legal_moves = {}        #dictionary
+        # flags = {}
 
         for column in range(7):  # 0~6
             if self.isLegalMove(column, board):
-                temp = self.make_move_rulebased(board, column, currentPlayer, local_point=0)
-                legal_moves[column] = self.rule_myself(temp, currentPlayer)  # RULE BASED ALGORITHM
-                temp2 = self.make_move_rulebased(temp, column, enemyPlayer, temp.local_point)   #depth 2
-                legal_moves[column] = self.rule_enemy(temp2, enemyPlayer)
+                temp = self.makeMove(board, column, currentPlayer)
+                # if self.isLegalMove(column, temp):
+                #     temp2 = self.makeMove(temp, column, enemyPlayer)
+
+                legal_moves[column] = self.rule_checking_flags(temp, currentPlayer)                # RULE BASED ALGORITHM
+              #  temp2 = self.make_move_rulebased(temp, column, enemyPlayer, temp.local_point)   #depth 2
+              #  legal_moves[column] = self.rule_enemy(temp2, enemyPlayer)
+
+        # legal_moves[3] = [1, 1, 2, 4, 5, 1..])
+        # {3: (board1, [1, 2,, 1]),
+        # 4: ...
+        # 5}
+
+        get_value = lambda key: legal_moves[key]
+        best_point = max(legal_moves, key=get_value) #column값 나옴
+        best_board = self.make_move2(board, best_point, currentPlayer)
+        
+        messages = {
+            0: "Rule 1: If there is a winning move take it",
+            1: "Rule 2"
+        }
+
+        for rule in range(8):
+            if legal_moves[best_point][rule]:
+                print(messages[rule])
 
 
-        best_point = -999999
         best_move = None
 
-        moves = legal_moves.items()
+        # moves = legal_moves.items()
 
-        for move, point in moves:
-            if point >= best_point:
-                best_point = point
-                best_move = move
+        # for move, point in moves:
+        #     if point >= best_point:
+        #         best_point = point
+        #         best_move = move
+        #
 
-
-        # best_point를 스트링으로 변환해서 각 자리수 0인지 아닌지로 구분.
-        if best_point / 100000000 != 0:
-            print("Rule 1: If there is a winning move, take it")
-        elif best_point < 0:
-            print("Rule 2: If the opponent has a winning move, interfere it.")
-        elif best_point < 10000000 and best_point > 9999:
-            print("Rule 3: If there is a move connecting three, take it.")
-        elif best_point :
-            print("Rule 4: Take the center square over edges and corners.")
-        elif best_point :
-            print("Rule 5: If the move takes place at odd row, take it over even row.")
-        elif best_point:
-            print("Rule 6: Take the corner square over edges.")
 
         # hidden rule : if current move makes a chance for opponent to connect four, do not.
 
 
-        return best_move
+        return best_board
+
+    def rule_checking_flags(self, board, tile, row, column):
+        flag =[0]*8
+        if tile == self.colors[0]:
+            enemyTile = self.colors[1]
+        else:
+            enemyTile = self.colors[0]
+
+        connectFour = self.checkForStreak(board, tile, 4)
+        connectThree = self.checkForStreak(board, tile, 3)
+        connectTwo = self.checkForStreak(board, tile, 2)
+
+
+
+        if connectFour:
+            flag[0] += 1
+
+        if connectThree:
+            flag[2] += 1
+
+        if connectTwo:
+            flag[4] += 1
+
+        if row % 2 == 0 :
+            flag[6] += 1
+
+        if column == 3 :
+            flag[7] += 2
+        elif column == 0 or 6:
+            flag[7] += 1
+
+        flag[1], flag[3], flag[5] = 1, 1, 1
+        for i in range(7):
+            _, temp_board = self.make_move2(board, column, enemyTile)
+            rule_enemy_tups = ((1, 4), (3, 3), (5,2))
+            for rule, enem in rule_enemy_tups:
+                if self.checkForStreak(board, enemyTile, enem):
+                    flag[rule] = 0
+            # enemyconnectFour = sef.checkForStreak(board, enemyTile, 4)
+            # enemyconnectThree = self.checkForStreak(board, enemyTile, 3)
+            # enemyconnectTwo = self.checkForStreak(board, enemyTile, 2)
+        return flag
+
 
     def rule_myself(self, board, tile):
 
@@ -152,18 +203,22 @@ class Solver(object):
         else:
             enemyTile = self.colors[0]
 
-        point = 0
-
         connectFour = self.checkForStreak(board, tile, 4)
         connectThree = self.checkForStreak(board, tile, 3)
         connectTwo = self.checkForStreak(board, tile, 2)
         enemyConnectFour = self.checkForStreak(board, enemyTile, 4)
         enemyConnectThree = self.checkForStreak(board, enemyTile, 3)
 
-        if connectFour or connectThree or connectTwo:
-            point += connectFour * 1000000000
-            point += connectThree * 10000
-            point += connectTwo * 100
+        if connectFour:
+            self.flag_list[0] += 1
+
+        if connectThree:
+            self.flag_list[2] += 1
+
+        if connectTwo:
+            self.flag_list[5] += 1
+
+
 
       ##  if enemyConnectFour :       #수정 필요, depth =2까지 봐야 구현 가능할듯
       ##      point = point - 5000
@@ -174,7 +229,7 @@ class Solver(object):
 
         # 새로 들어오는 점이 홀수 열이면 가산점,
         # 가운데 3번 가산점 > 0번 6번 > 나머지
-        point = point + self.local_point
+       point = point + self.local_point
 
 
         return point
@@ -227,28 +282,37 @@ class Solver(object):
         for i in range(6):
             if temp[i][column] == ' ':
                 temp[i][column] = color
-                return temp
+                return i, temp
 
-    def make_move_rulebased(self, board, column, color, local_point):
+    def make_move2(self, board, column, color):
+        temp = [x[:] for x in board]
+        for row in range(6):
+            if temp[row][column] == ' ':
+                temp[row][column] = color
+                break
+        return row, temp
 
-        self.local_point = 0
+
+    def make_move_rulebased(self, board, column, color):   #한 행에 대해 추가한 보드판
+
+
+        flag = [0]*8
 
         temp = [x[:] for x in board]
         for i in range(6):
             if temp[i][column] == ' ':
                 temp[i][column] = color
+
                 if i%2 == 0:    #odd row advantage
-                    self.local_point += 30
+                    flag[6] += 1
+
                 if column == 4:
-                    self.local_point += 50
+                    flag[7] += 2
                 elif column == 0 or column == 6:
-                    self.local_point += 40
-                else:
-                    self.local_point = 0
+                    flag[7] += 1
 
-                self.local_point = local_point
 
-                return temp
+                return temp, flag
 
     def value(self, board, tile):
 
