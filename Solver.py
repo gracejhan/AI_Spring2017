@@ -118,7 +118,7 @@ class Solver(object):
 
         get_value = lambda key: legal_moves[key]
         best_point = max(legal_moves, key=get_value) #column값 나옴
-        best_board = self.make_move2(board, best_point, currentPlayer)
+        best_move, _ = self.make_move2(board, best_point, currentPlayer)
 
         messages = {
             0: "Rule 1: If there is a winning move, take it.",
@@ -136,7 +136,7 @@ class Solver(object):
                 print(messages[rule])
 
 
-        best_move = None
+        #best_move = None
 
         # moves = legal_moves.items()
 
@@ -146,7 +146,7 @@ class Solver(object):
         #         best_move = move
         #
 
-        return best_board
+        return best_move
 
     def rule_checking_flags(self, board, tile, row, column):
         flag =[0]*8
@@ -289,26 +289,26 @@ class Solver(object):
 
 
 
-    def make_move_rulebased(self, board, column, color):   #한 행에 대해 추가한 보드판
-
-
-        flag = [0]*8
-
-        temp = [x[:] for x in board]
-        for i in range(6):
-            if temp[i][column] == ' ':
-                temp[i][column] = color
-
-                if i%2 == 0:    #odd row advantage
-                    flag[6] += 1
-
-                if column == 4:
-                    flag[7] += 2
-                elif column == 0 or column == 6:
-                    flag[7] += 1
-
-
-                return temp, flag
+    # def make_move_rulebased(self, board, column, color):   #한 행에 대해 추가한 보드판
+    #
+    #
+    #     flag = [0]*8
+    #
+    #     temp = [x[:] for x in board]
+    #     for i in range(6):
+    #         if temp[i][column] == ' ':
+    #             temp[i][column] = color
+    #
+    #             if i%2 == 0:    #odd row advantage
+    #                 flag[6] += 1
+    #
+    #             if column == 4:
+    #                 flag[7] += 2
+    #             elif column == 0 or column == 6:
+    #                 flag[7] += 1
+    #
+    #
+    #             return temp, flag
 
     def value(self, board, tile):
 
