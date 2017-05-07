@@ -105,8 +105,9 @@ class Solver(object):
 
         for column in range(7):  # 0~6
             if self.isLegalMove(column, board):
-                temp = self.make_move2(board, column, currentPlayer)
-                legal_moves[column] = self.rule_checking_flags(temp, currentPlayer, row, column)                # RULE BASED ALGORITHM
+                selected_row, temp = self.make_move2(board, column, currentPlayer)
+                legal_moves[column] = self.rule_checking_flags(temp, currentPlayer, selected_row, column)                # RULE BASED ALGORITHM
+
               #  temp2 = self.make_move_rulebased(temp, column, enemyPlayer, temp.local_point)   #depth 2
               #  legal_moves[column] = self.rule_enemy(temp2, enemyPlayer)
 
@@ -144,10 +145,6 @@ class Solver(object):
         #         best_point = point
         #         best_move = move
         #
-
-
-        # hidden rule : if current move makes a chance for opponent to connect four, do not.
-
 
         return best_board
 
@@ -281,7 +278,7 @@ class Solver(object):
         for i in range(6):
             if temp[i][column] == ' ':
                 temp[i][column] = color
-                return i, temp
+                return temp
 
     def make_move2(self, board, column, color):
         temp = [x[:] for x in board]
