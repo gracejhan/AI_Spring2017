@@ -250,7 +250,7 @@ class AIPlayer(Player):
             m = Solver(board)
             if phase <= 6:
                 bestMove, value = m.bestMoveSearch(self.depth, board, self.color, phase)
-            elif phase <= 12:
+            elif phase <= 16:
                 bestMove, value = m.bestMoveSearch(self.depth + 1, board, self.color, phase)
             else:
                 bestMove, value = m.bestMoveSearch(self.depth + 2, board, self.color, phase)
