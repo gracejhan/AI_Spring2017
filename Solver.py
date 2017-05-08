@@ -117,8 +117,11 @@ class Solver(object):
         # 5}
 
         get_value = lambda key: legal_moves[key]
-        best_point = max(legal_moves, key=get_value) #column값 나옴
-        best_move, _ = self.make_move2(board, best_point, currentPlayer)
+        best_point = max(legal_moves, key=get_value) #column값(key) 나옴
+    #    best_move, _ = self.make_move2(board, best_point, currentPlayer)
+    #    best_move = self.makeMove(board, best_point, currentPlayer)
+
+        print(best_point, legal_moves[best_point])
 
         messages = {
             0: "Rule 1: If there is a winning move, take it.",
@@ -146,18 +149,18 @@ class Solver(object):
         #         best_move = move
         #
 
-        return best_move
+        return best_point
 
-    def rule_checking_flags(self, board, tile, row, column):
+    def rule_checking_flags(self, board, currentPlayer, row, column):
         flag =[0]*8
-        if tile == self.colors[0]:
-            enemyTile = self.colors[1]
+        if currentPlayer == self.colors[0]:
+            enemyPlayer = self.colors[1]
         else:
-            enemyTile = self.colors[0]
+            enemyPlayer = self.colors[0]
 
-        connectFour = self.checkForStreak(board, tile, 4)
-        connectThree = self.checkForStreak(board, tile, 3)
-        connectTwo = self.checkForStreak(board, tile, 2)
+        connectFour = self.checkForStreak(board, currentPlayer, 4)
+        connectThree = self.checkForStreak(board, currentPlayer, 3)
+        connectTwo = self.checkForStreak(board, currentPlayer, 2)
 
         if connectFour:
             flag[0] += 1
@@ -176,13 +179,22 @@ class Solver(object):
         elif column == 0 or 6:
             flag[7] += 1
 
+        #색깔확인 못하는듯
+
         flag[1], flag[3], flag[5] = 1, 1, 1
-        for i in range(7):
-            _, temp_board = self.make_move2(board, column, enemyTile)
-            rule_enemy_tuples = ((1, 4), (3, 3), (5,2))
-            for rule, opponent in rule_enemy_tuples:
-                if self.checkForStreak(board, enemyTile, opponent):
-                    flag[rule] = 0
+        for column in range(7):
+            if self.isLegalMove(column, board):
+                _, temp_board = self.make_move2(board, column, enemyPlayer)
+
+                if enemyPlayer == self.colors[0]:
+                    currentPlayer = self.colors[1]
+                else:
+                    currentPlayer = self.colors[0]
+
+                rule_enemy_tuples = ((1, 4), (3, 3), (5,2))
+                for rule, consecutive in rule_enemy_tuples:
+                    if self.checkForStreak(board, enemyPlayer, consecutive):
+                        flag[rule] = -1
             # enemyconnectFour = sef.checkForStreak(board, enemyTile, 4)
             # enemyconnectThree = self.checkForStreak(board, enemyTile, 3)
             # enemyconnectTwo = self.checkForStreak(board, enemyTile, 2)
