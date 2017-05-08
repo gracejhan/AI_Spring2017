@@ -331,7 +331,7 @@ class Solver(object):
         if enemyConnectFour > 0:
             return -10000
         else:
-            return connectFour * 10000 + connectThree * 1000 + connectTwo
+            return connectFour * 10000 + connectThree * 100 + connectTwo
 
     def checkForStreak(self, board, tile, streak):
 
