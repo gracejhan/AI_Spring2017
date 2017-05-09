@@ -186,8 +186,7 @@ class Game(object):
         if count > 0:
             connectFour = True
 
-        if count == 2:
-            return connectFour
+        return connectFour
 
     def printState(self):
 
