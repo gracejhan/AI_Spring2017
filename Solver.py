@@ -125,6 +125,23 @@ class Solver(object):
             for k, v in legal_moves.items():
                 v[rule] = 0
 
+    def removeRedundancyRule(self, legal_moves, rule):
+        temp_list = [v[rule] for k, v in legal_moves.items()]
+        if all(item == temp_list[0] for item in temp_list):
+            for k, v in legal_moves.items():
+                v[rule] = 0
+
+                # if k == 0:
+                #     v[rule] -= v[rule]
+                #     v[rule+2] -= v[rule+2]+1
+                #     v[rule+4] -= v[rule+4]+1
+                # elif k == 2:
+                #     v[rule] -= v[rule]
+                #     v[rule+2] -= v[rule]+1
+                # elif k == 4:
+                #     v[rule] -= v[rule]
+
+
     def bestMoveRule(self, board, currentPlayer, phase):
 
         if currentPlayer == self.colors[0]:
@@ -145,13 +162,16 @@ class Solver(object):
               #  legal_moves[column] = self.rule_enemy(temp2, enemyPlayer)
 
         # legal_moves[3] = [1, 1, 2, 4, 5, 1..])
-        # {3: (board1, [1, 2,, 1]),
+        # {3: [1, 2,, 1],
         # 4: ...
         # 5}
 
         for rule_num in [1,3,5]:
             self.removeDefaultRule(legal_moves, rule_num)
 
+
+        for rule_num in [0,2,4]:
+            self.removeRedundancyRule(legal_moves,rule_num)
 
         get_value = lambda key: legal_moves[key]
         best_point = max(legal_moves, key=get_value) #column값(key) 나옴
@@ -162,13 +182,13 @@ class Solver(object):
 
         messages = {
             0: "Rule 1: If there is a winning move, take it.",
-            1: "Rule 2: If the opponent can make winning move, interfere it.",
-            2: "Rule 3: If my square can be connected for 3, make it.",
+            1: "Rule 2: Avoid the situation that the opponent can make a winning move.",
+            2: "Rule 3: If my square can create or extend the streak, make it",
             3: "Rule 4: Avoid the situation that the opponent can connect 3.",
-            4: "Rule 5: If my square can be connected for 2, make it.",
-            5: "Rule 6: If the opponent can connect 2, interfere it.",
-            6: "Rule 7: Put the stone in a square at odd row (except for the first)",
-            7: "Rule 8: Place a stone at center, or corner if not possible"
+            4: "Rule 3: If my square can create or extend the streak, make it.",
+            5: "Rule 5: Avoid the situation that the opponent can connect 2.",
+            6: "Rule 6: Put the stone in a square at odd row (except for the first)",
+            7: "Rule 7: Place a stone at center, or corner if not possible"
         }
 
         for rule in range(8):
@@ -176,15 +196,6 @@ class Solver(object):
                 print(messages[rule])
 
 
-        #best_move = None
-
-        # moves = legal_moves.items()
-
-        # for move, point in moves:
-        #     if point >= best_point:
-        #         best_point = point
-        #         best_move = move
-        #
 
         return best_point
 
@@ -200,13 +211,13 @@ class Solver(object):
         connectTwo = self.checkForStreak(board, currentPlayer, 2)
 
         if connectFour:
-            flag[0] += 1
+            flag[0] += connectFour
 
         if connectThree:
-            flag[2] += 1
+            flag[2] += connectThree
 
         if connectTwo:
-            flag[4] += 1
+            flag[4] += connectTwo
 
         if row == 2 or row == 4:
             flag[6] += 1
@@ -216,24 +227,16 @@ class Solver(object):
         elif column == 0 or column == 6:
             flag[7] += 1
 
-
         flag[1], flag[3], flag[5] = 1, 1, 1
         for column in range(7):
             if self.isLegalMove(column, board):
                 _, temp_board = self.make_move2(board, column, enemyPlayer)
 
-                # if enemyPlayer == self.colors[0]:
-                #     currentPlayer = self.colors[1]
-                # else:
-                #     currentPlayer = self.colors[0]
-
                 rule_enemy_tuples = ((1, 4), (3, 3), (5,2))
                 for rule, consecutive in rule_enemy_tuples:
                     if self.checkForStreak(temp_board, enemyPlayer, consecutive) != 0:
                         flag[rule] = 0
-            # enemyconnectFour = sef.checkForStreak(board, enemyTile, 4)
-            # enemyconnectThree = self.checkForStreak(board, enemyTile, 3)
-            # enemyconnectTwo = self.checkForStreak(board, enemyTile, 2)
+
         return flag
 
 
@@ -277,7 +280,7 @@ class Solver(object):
     #
     #
     #     return point
-
+    #
     # def rule_enemy(self, board, tile):
     #
     #     # return the point value
@@ -381,7 +384,11 @@ class Solver(object):
     def verticalCheck(self, row, column, board, streak):
 
         line = 0
+        # color = board[row][column]
 
+        # if row >0:
+        #     if board[row-1][column] == color:
+        #         return 0
         for i in range(row, 6):
             if board[i][column].lower() == board[row][column].lower():
                 line += 1
@@ -397,6 +404,12 @@ class Solver(object):
 
         line = 0
 
+        # color = board[row][column]
+        #
+        # if column > 0:
+        #     if board[row][column-1] == color:
+        #         return 0
+
         for j in range(column, 7):
             if board[row][j].lower() == board[row][column].lower():
                 line += 1
@@ -411,7 +424,13 @@ class Solver(object):
     def diagonalCheck(self, row, column, board, streak):
 
         total = 0
-
+        # line = 0
+        # color = board[row][column]
+        #
+        # if row > 0 and column > 0:
+        #     if board[row-1][column-1] == color:
+        #         line = 0
+        # else:
         line = 0
         j = column
         for i in range(row, 6):
@@ -426,6 +445,10 @@ class Solver(object):
         if line >= streak:
             total += 1
 
+        # if row < 6 and column > 0:
+        #     if board[row+1][column-1] == color:
+        #         line = 0
+        # else:
         line = 0
         j = column
         for i in range(row, 6):
