@@ -86,9 +86,9 @@ class Solver(object):
 
         if depth == 0 or len(legal_moves) == 0 or self.gameIsOver(board):
             if self.AIcolor == currentPlayer:
-                return -self.value(board, currentPlayer)
-            else:
                 return self.value(board, currentPlayer)
+            else:
+                return self.value(board, enemyPlayer)
 
         bestMoveValue = -9999999
 
@@ -325,6 +325,6 @@ class Solver(object):
             j += 1  # increment column when row is incremented
 
         if line >= streak:
-            total += 1
+            total -= 1
 
         return total
