@@ -15,7 +15,7 @@ def main():
         g.printState()
 
         while True:
-            play_again = input("Would you like to play again? 1 for Yes, 2 for No : ")
+            play_again = int(input("Would you like to play again? 1 for Yes, 2 for No : "))
 
             if play_again == 1:
                 g.newGame()

@@ -125,6 +125,7 @@ class Solver(object):
             for k, v in legal_moves.items():
                 v[rule] = 0
 
+
     def removeRedundancyRule(self, legal_moves, rule):
         temp_list = [v[rule] for k, v in legal_moves.items()]
         if all(item == temp_list[0] for item in temp_list):
@@ -142,18 +143,13 @@ class Solver(object):
                 #     v[rule] -= v[rule]
 
 
+
     def bestMoveRule(self, board, currentPlayer, phase):
+ 
+        
+        legal_moves = {}        # dictionary where keys: column numbers, values: a 8 number tuple which denotes the rules applied
 
-        if currentPlayer == self.colors[0]:
-            enemyPlayer = self.colors[1]
-        else:
-            enemyPlayer = self.colors[0]
-
-        currPhase = phase
-
-        legal_moves = {}        #dictionary
-
-        for column in range(7):  # 0~6
+        for column in range(7):  # iterate all columns
             if self.isLegalMove(column, board):
                 selected_row, temp = self.make_move2(board, column, currentPlayer)
                 legal_moves[column] = self.rule_checking_flags(temp, currentPlayer, selected_row, column)                # RULE BASED ALGORITHM
@@ -166,17 +162,17 @@ class Solver(object):
         # 4: ...
         # 5}
 
-        for rule_num in [1,3,5]:
+        for rule_num in [1, 3, 5]:
             self.removeDefaultRule(legal_moves, rule_num)
+
 
 
         for rule_num in [0,2,4]:
             self.removeRedundancyRule(legal_moves,rule_num)
 
+
         get_value = lambda key: legal_moves[key]
-        best_point = max(legal_moves, key=get_value) #column값(key) 나옴
-    #    best_move, _ = self.make_move2(board, best_point, currentPlayer)
-    #    best_move = self.makeMove(board, best_point, currentPlayer)
+        best_point = max(legal_moves, key=get_value)  # column값(key) 나옴
 
         print(best_point, legal_moves[best_point])
 
@@ -200,7 +196,7 @@ class Solver(object):
         return best_point
 
     def rule_checking_flags(self, board, currentPlayer, row, column):
-        flag =[0]*8
+        flag = [0] * 8
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
@@ -240,69 +236,6 @@ class Solver(object):
         return flag
 
 
-    # def rule_myself(self, board, tile):
-    #
-    #     # return the point value
-    #     # MAKE THIS PART FOR RULE BASED DECISION MAKING
-    #
-    #     if tile == self.colors[0]:
-    #         enemyTile = self.colors[1]
-    #     else:
-    #         enemyTile = self.colors[0]
-    #
-    #     connectFour = self.checkForStreak(board, tile, 4)
-    #     connectThree = self.checkForStreak(board, tile, 3)
-    #     connectTwo = self.checkForStreak(board, tile, 2)
-    #     enemyConnectFour = self.checkForStreak(board, enemyTile, 4)
-    #     enemyConnectThree = self.checkForStreak(board, enemyTile, 3)
-    #
-    #     if connectFour:
-    #         self.flag_list[0] += 1
-    #
-    #     if connectThree:
-    #         self.flag_list[2] += 1
-    #
-    #     if connectTwo:
-    #         self.flag_list[5] += 1
-    #
-    #
-    #
-    #   ##  if enemyConnectFour :       #수정 필요, depth =2까지 봐야 구현 가능할듯
-    #   ##      point = point - 5000
-    #
-    #   ##  if enemyConnectThree:
-    #   ##      point = point - 1000
-    #
-    #
-    #     # 새로 들어오는 점이 홀수 열이면 가산점,
-    #     # 가운데 3번 가산점 > 0번 6번 > 나머지
-    #    point = point + self.local_point
-    #
-    #
-    #     return point
-    #
-    # def rule_enemy(self, board, tile):
-    #
-    #     # return the point value
-    #     # MAKE THIS PART FOR RULE BASED DECISION MAKING
-    #
-    #     if tile == self.colors[0]:
-    #         currentPlayer = self.colors[1]
-    #     else:
-    #         currentPlayer = self.colors[0]
-    #
-    #     point = self.point
-    #
-    #     enemy_connectFour = self.checkForStreak(board, tile, 4)       #여기에 board라고 해도 맞는건가
-    #
-    #     if enemy_connectFour:
-    #         point = point - 999999      # 점수 수정 필요
-    #
-    #
-    #
-    #     return point
-
-
 
     def isLegalMove(self, column, board):
 
@@ -338,28 +271,6 @@ class Solver(object):
                 temp[row][column] = color
                 return row, temp
 
-
-
-    # def make_move_rulebased(self, board, column, color):   #한 행에 대해 추가한 보드판
-    #
-    #
-    #     flag = [0]*8
-    #
-    #     temp = [x[:] for x in board]
-    #     for i in range(6):
-    #         if temp[i][column] == ' ':
-    #             temp[i][column] = color
-    #
-    #             if i%2 == 0:    #odd row advantage
-    #                 flag[6] += 1
-    #
-    #             if column == 4:
-    #                 flag[7] += 2
-    #             elif column == 0 or column == 6:
-    #                 flag[7] += 1
-    #
-    #
-    #             return temp, flag
 
     def checkForStreak(self, board, tile, streak):
 
