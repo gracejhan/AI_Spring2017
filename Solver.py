@@ -126,14 +126,14 @@ class Solver(object):
                 v[rule] = 0
 
     def bestMoveRule(self, board, currentPlayer, phase):
-
+        """
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
             enemyPlayer = self.colors[0]
 
         currPhase = phase
-
+        """
         legal_moves = {}        #dictionary
 
         for column in range(7):  # 0~6
@@ -149,12 +149,11 @@ class Solver(object):
         # 4: ...
         # 5}
 
-        for rule_num in [1,3,5]:
+        for rule_num in [1, 3, 5]:
             self.removeDefaultRule(legal_moves, rule_num)
 
-
         get_value = lambda key: legal_moves[key]
-        best_point = max(legal_moves, key=get_value) #column값(key) 나옴
+        best_point = max(legal_moves, key=get_value)  # column값(key) 나옴
     #    best_move, _ = self.make_move2(board, best_point, currentPlayer)
     #    best_move = self.makeMove(board, best_point, currentPlayer)
 
@@ -189,7 +188,7 @@ class Solver(object):
         return best_point
 
     def rule_checking_flags(self, board, currentPlayer, row, column):
-        flag =[0]*8
+        flag = [0] * 8
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
@@ -215,7 +214,6 @@ class Solver(object):
             flag[7] += 2
         elif column == 0 or column == 6:
             flag[7] += 1
-
 
         flag[1], flag[3], flag[5] = 1, 1, 1
         for column in range(7):
@@ -299,8 +297,6 @@ class Solver(object):
     #
     #     return point
 
-
-
     def isLegalMove(self, column, board):
 
         # return boolean value if the move is legal
@@ -334,8 +330,6 @@ class Solver(object):
             if temp[row][column] == ' ':
                 temp[row][column] = color
                 return row, temp
-
-
 
     # def make_move_rulebased(self, board, column, color):   #한 행에 대해 추가한 보드판
     #
