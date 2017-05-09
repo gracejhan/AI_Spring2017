@@ -415,14 +415,14 @@ class Solver(object):
 
         line = 0
         j = column
-        for i in range(row, -1, -1):
+        for i in range(row, 6):
             if j > 6:
                 break
             elif board[i][j].lower() == board[row][column].lower():
                 line += 1
             else:
                 break
-            j += 1  # increment column when row is incremented
+            j -= 1  # decrement column when row is incremented
 
         if line >= streak:
             total += 1
