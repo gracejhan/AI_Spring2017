@@ -4,6 +4,7 @@ from Solver import Solver
 
 
 class Game(object):
+
     board = None
     phase = None
     finished = None
@@ -173,7 +174,7 @@ class Game(object):
                 line += 1
             else:
                 break
-            j += 1
+            j -= 1
 
         if line >= 4:
             count += 1
