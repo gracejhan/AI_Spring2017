@@ -192,7 +192,7 @@ class Solver(object):
 
                 rule_enemy_tuples = ((1, 4), (3, 3), (5,2))
                 for rule, consecutive in rule_enemy_tuples:
-                    if self.checkForStreak(board, enemyPlayer, consecutive) != 0:
+                    if self.checkForStreak(temp_board, enemyPlayer, consecutive) != 0:
                         flag[rule] = 0
             # enemyconnectFour = sef.checkForStreak(board, enemyTile, 4)
             # enemyconnectThree = self.checkForStreak(board, enemyTile, 3)
