@@ -81,10 +81,7 @@ class Solver(object):
             enemyPlayer = self.colors[0]
 
         if depth == 0 or len(legal_moves) == 0 or self.gameIsOver(board):
-            if self.AIcolor == currentPlayer:
-                return self.value(board, currentPlayer)
-            else:
-                return self.value(board, enemyPlayer)
+            return self.value(board, currentPlayer)
 
         bestMoveValue = -9999999
 
