@@ -122,6 +122,12 @@ class Solver(object):
 
         return result
 
+    def removeDefaultRule(self, legal_moves, rule):
+        temp_list = [v[rule] for k, v in legal_moves.items()]
+        if 0 not in temp_list:
+            for k, v in legal_moves.items():
+                v[rule] = 0
+
     def bestMoveRule(self, board, currentPlayer, phase):
 
         if currentPlayer == self.colors[0]:
@@ -146,6 +152,10 @@ class Solver(object):
         # 4: ...
         # 5}
 
+        for rule_num in [1,3,5]:
+            self.removeDefaultRule(legal_moves, rule_num)
+
+
         get_value = lambda key: legal_moves[key]
         best_point = max(legal_moves, key=get_value) #column값(key) 나옴
     #    best_move, _ = self.make_move2(board, best_point, currentPlayer)
@@ -157,7 +167,7 @@ class Solver(object):
             0: "Rule 1: If there is a winning move, take it.",
             1: "Rule 2: If the opponent can make winning move, interfere it.",
             2: "Rule 3: If my square can be connected for 3, make it.",
-            3: "Rule 4: If the opponent can connect 3, interfere it.",
+            3: "Rule 4: Avoid the situation that the opponent can connect 3.",
             4: "Rule 5: If my square can be connected for 2, make it.",
             5: "Rule 6: If the opponent can connect 2, interfere it.",
             6: "Rule 7: Put the stone in a square at odd row (except for the first)",
