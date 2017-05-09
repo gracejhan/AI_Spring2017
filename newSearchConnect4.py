@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-from newSearchSolver import Solver
+#from Latest.OriginalSolver import Solver
+from Latest.TrialSolver import Solver
 
 
 class Game(object):
