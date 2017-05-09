@@ -4,7 +4,6 @@ from Solver import Solver
 
 
 class Game(object):
-
     board = None
     phase = None
     finished = None
