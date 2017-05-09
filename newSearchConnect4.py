@@ -167,7 +167,7 @@ class Game(object):
 
         line = 0
         j = column
-        for i in range(row, -1, -1):
+        for i in range(row, 6):
             if j > 6:
                 break
             elif self.board[i][j].lower() == self.board[row][column].lower():
