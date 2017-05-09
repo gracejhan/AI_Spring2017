@@ -256,12 +256,12 @@ class AIPlayer(Player):
             return bestMove
 
         elif solveOption == 2:
-            m = Solver(board)
+            m = Solver(board, self.color)
             bestMove = m.bestMoveRule(board, self.color, phase)
             return bestMove
 
         else:
             print("Error, using search algorithm...")
-            m = Solver(board)
+            m = Solver(board, self.color)
             bestMove, value = m.bestMoveSearch(self.depth, board, self.color, phase)
             return bestMove
