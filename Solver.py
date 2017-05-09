@@ -32,6 +32,7 @@ class Solver(object):
         start = time()
 
         columns = [3, 2, 4, 1, 5, 0, 6]
+
         if currPhase <= 6:
             legal_moves = {3: 5, 2: 0, 4: 0, 1: 0, 5: 0, 0: -5, 6: -5}
         else:
@@ -97,7 +98,7 @@ class Solver(object):
             if alpha >= beta:
                 break
         return bestMoveValue
-    
+
     def value(self, board, tile):
 
         # evaluate the fitness of each board state for the player
