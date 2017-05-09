@@ -124,7 +124,8 @@ class Solver(object):
         if 0 not in temp_list:
             for k, v in legal_moves.items():
                 v[rule] = 0
-
+    
+    # find the best move according to the rules applicable
     def bestMoveRule(self, board, currentPlayer, phase):
         """
         if currentPlayer == self.colors[0]:
@@ -134,9 +135,10 @@ class Solver(object):
 
         currPhase = phase
         """
-        legal_moves = {}        #dictionary
+        
+        legal_moves = {}        # dictionary where keys: column numbers, values: a 8 number tuple which denotes the rules applied
 
-        for column in range(7):  # 0~6
+        for column in range(7):  # iterate all columns
             if self.isLegalMove(column, board):
                 selected_row, temp = self.make_move2(board, column, currentPlayer)
                 legal_moves[column] = self.rule_checking_flags(temp, currentPlayer, selected_row, column)                # RULE BASED ALGORITHM
