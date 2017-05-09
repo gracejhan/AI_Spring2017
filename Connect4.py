@@ -26,7 +26,7 @@ class Game(object):
         self.winner = None
         self.players[0] = None
 
-        print("Do you go first or second?")
+        print("Do you want to go first or second?")
 
         while self.players[0] is None:
 
