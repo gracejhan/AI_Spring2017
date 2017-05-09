@@ -17,6 +17,8 @@ class Game(object):
         self.finished = False
         self.winner = None
 
+        self.newGame()
+
         print("Do you go first or second?")
 
         while self.players[0] is None:
@@ -46,10 +48,31 @@ class Game(object):
                 self.board[i].append(' ')
 
     def newGame(self):
-
         self.phase = 1
         self.finished = False
         self.winner = None
+        self.players[0] = None
+
+        print("Do you go first or second?")
+
+        while self.players[0] is None:
+
+            choice = int(input("Type 1 or 2 : "))
+
+            if choice == 1:
+                self.players[0] = AIPlayer(self.colors[0])
+                self.players[1] = Player(self.colors[1])
+
+            elif choice == 2:
+                self.players[0] = Player(self.colors[0])
+                self.players[1] = AIPlayer(self.colors[1])
+
+            else:
+                print("Error, try again")
+
+        print("Player 1 is {0}".format(self.colors[0]))
+        print("Player 2 is {0}".format(self.colors[1]))
+
         self.turn = self.players[0]
 
         self.board = []
