@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 from time import time
 
@@ -11,9 +12,10 @@ class Solver(object):
     board = None
     colors = ["o", "x"]
 
-    def __init__(self, board):
+    def __init__(self, board, color):
 
         self.board = [x[:] for x in board]
+        self.AIcolor = color
 
     def bestMoveSearch(self, depth, board, currentPlayer, phase):
 
@@ -31,9 +33,9 @@ class Solver(object):
 
         columns = [3, 2, 4, 1, 5, 0, 6]
         if currPhase <= 6:
-            legal_moves = {3: -994, 2: -999, 4: -999, 1: -999, 5: -999, 0: -1004, 6: -1004}
+            legal_moves = {3: 5, 2: 0, 4: 0, 1: 0, 5: 0, 0: -5, 6: -5}
         else:
-            legal_moves = {3: -999, 2: -999, 4: -999, 1: -999, 5: -999, 0: -999, 6: -999}
+            legal_moves = {3: 0, 2: 0, 4: 0, 1: 0, 5: 0, 0: 0, 6: 0}
 
         for column in columns:  # 0~6
             print("Searching column number : ", end="")
@@ -44,7 +46,7 @@ class Solver(object):
 
             if self.isLegalMove(column, board) and time() - start < 100:
                 temp = self.makeMove(board, column, currentPlayer)
-                legal_moves[column] += -self.search(depth, -999999, 999999, temp, enemyPlayer)  # puts in the alpha values of each choice
+                legal_moves[column] += -self.search(depth, -999, 999, temp, enemyPlayer)  # puts in the alpha values of each choice
 
             print("Alpha : ", end="")
             print(legal_moves.items())
@@ -72,13 +74,16 @@ class Solver(object):
                 temp = self.makeMove(board, i, currentPlayer)
                 legal_moves.append(temp)
 
-        if depth == 0 or len(legal_moves) == 0 or self.gameIsOver(board):
-            return self.value(board, currentPlayer)
-
         if currentPlayer == self.colors[0]:
             enemyPlayer = self.colors[1]
         else:
             enemyPlayer = self.colors[0]
+
+        if depth == 0 or len(legal_moves) == 0 or self.gameIsOver(board):
+            if self.AIcolor == currentPlayer:
+                return self.value(board, currentPlayer)
+            else:
+                return self.value(board, enemyPlayer)
 
         bestMoveValue = -9999999
 
@@ -88,9 +93,33 @@ class Solver(object):
             currValue = -self.search(depth - 1, -beta, -alpha, child, enemyPlayer)
             bestMoveValue = max(bestMoveValue, currValue)
             alpha = max(alpha, currValue)
+
             if alpha >= beta:
                 break
         return bestMoveValue
+    
+    def value(self, board, tile):
+
+        # evaluate the fitness of each board state for the player
+        # connect4 = 10000 points, connect3 = 100 points, connect2 = 1 point
+        # enemy point is minus points
+
+        if tile == self.colors[0]:
+            enemyTile = self.colors[1]
+        else:
+            enemyTile = self.colors[0]
+
+        connectFour = self.checkForStreak(board, tile, 4)
+        connectThree = self.checkForStreak(board, tile, 3)
+        connectTwo = self.checkForStreak(board, tile, 2)
+        enemyConnectFour = self.checkForStreak(board, enemyTile, 4)
+        enemyConnectThree = self.checkForStreak(board, enemyTile, 3)
+        enemyConnectTwo = self.checkForStreak(board, enemyTile, 2)
+
+        result = (connectFour * 10000 + connectThree * 100 + connectTwo) - \
+                 (enemyConnectFour * 10000 + enemyConnectThree * 100 + enemyConnectTwo)
+
+        return result
 
     def bestMoveRule(self, board, currentPlayer, phase):
 
@@ -320,29 +349,6 @@ class Solver(object):
     #
     #
     #             return temp, flag
-
-    def value(self, board, tile):
-
-        # evaluate the fitness of each board state for the player
-        # connect4 = 10000 points, connect3 = 100 points, connect2 = 1 point
-        # enemy point is minus points
-
-        if tile == self.colors[0]:
-            enemyTile = self.colors[1]
-        else:
-            enemyTile = self.colors[0]
-
-        connectFour = self.checkForStreak(board, tile, 4)
-        connectThree = self.checkForStreak(board, tile, 3)
-        connectTwo = self.checkForStreak(board, tile, 2)
-        enemyConnectFour = self.checkForStreak(board, enemyTile, 4)
-        # enemyConnectThree = self.checkForStreak(board, enemyTile, 3)
-        # enemyConnectTwo = self.checkForStreak(board, enemyTile, 2)
-
-        if enemyConnectFour > 0:
-            return -10000
-        else:
-            return connectFour * 10000 + connectThree * 100 + connectTwo
 
     def checkForStreak(self, board, tile, streak):
 
