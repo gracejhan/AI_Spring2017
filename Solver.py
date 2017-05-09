@@ -171,12 +171,12 @@ class Solver(object):
         if connectTwo:
             flag[4] += 1
 
-        if row == 2 or 4:
+        if row == 2 or row == 4:
             flag[6] += 1
 
         if column == 3 :
             flag[7] += 2
-        elif column == 0 or 6:
+        elif column == 0 or column == 6:
             flag[7] += 1
 
 
