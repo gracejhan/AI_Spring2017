@@ -179,7 +179,6 @@ class Solver(object):
         elif column == 0 or 6:
             flag[7] += 1
 
-        #색깔확인 못하는듯
 
         flag[1], flag[3], flag[5] = 1, 1, 1
         for column in range(7):
@@ -193,8 +192,8 @@ class Solver(object):
 
                 rule_enemy_tuples = ((1, 4), (3, 3), (5,2))
                 for rule, consecutive in rule_enemy_tuples:
-                    if self.checkForStreak(board, enemyPlayer, consecutive):
-                        flag[rule] = -1
+                    if self.checkForStreak(board, enemyPlayer, consecutive) != 0:
+                        flag[rule] = 0
             # enemyconnectFour = sef.checkForStreak(board, enemyTile, 4)
             # enemyconnectThree = self.checkForStreak(board, enemyTile, 3)
             # enemyconnectTwo = self.checkForStreak(board, enemyTile, 2)
@@ -362,7 +361,7 @@ class Solver(object):
                     # diagonal check /, \
                     count += self.diagonalCheck(i, j, board, streak)
                 else:
-                    return count
+                    continue
         return count
 
     def verticalCheck(self, row, column, board, streak):
