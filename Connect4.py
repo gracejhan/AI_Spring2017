@@ -167,14 +167,14 @@ class Game(object):
 
         line = 0
         j = column
-        for i in range(row, -1, -1):
+        for i in range(row, 6):
             if j > 6:
                 break
             elif self.board[i][j].lower() == self.board[row][column].lower():
                 line += 1
             else:
                 break
-            j += 1
+            j -= 1
 
         if line >= 4:
             count += 1
@@ -182,10 +182,7 @@ class Game(object):
                 self.winner = self.players[0]
             else:
                 self.winner = self.players[1]
-
-        #if count > 0:
-        #    connectFour = True
-
+                
         if count > 0:
             return True
         return False
@@ -236,7 +233,7 @@ class AIPlayer(Player):
 
     depth = None
 
-    def __init__(self, color, depth=6):
+    def __init__(self, color, depth=5):
         self.type = "Computer"
         self.color = color
         self.depth = depth
@@ -248,7 +245,7 @@ class AIPlayer(Player):
 
         if solveOption == 1:
             print("Using search algorithm...")
-            m = Solver(board)
+            m = Solver(board, self.color)
             if phase <= 6:
                 bestMove, value = m.bestMoveSearch(self.depth, board, self.color, phase)
             elif phase <= 16:
@@ -258,15 +255,16 @@ class AIPlayer(Player):
             return bestMove
 
         elif solveOption == 2:
-            m = Solver(board)
+            m = Solver(board, self.color)
             bestMove = m.bestMoveRule(board, self.color, phase)
             return bestMove
 
         else:
             print("Error, using search algorithm...")
-            m = Solver(board)
+            m = Solver(board, self. color)
             bestMove, value = m.bestMoveSearch(self.depth, board, self.color, phase)
             return bestMove
+
 
 
 ########################################################################
