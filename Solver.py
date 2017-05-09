@@ -145,7 +145,7 @@ class Solver(object):
 
 
     def bestMoveRule(self, board, currentPlayer, phase):
- 
+
         
         legal_moves = {}        # dictionary where keys: column numbers, values: a 8 number tuple which denotes the rules applied
 
@@ -174,7 +174,7 @@ class Solver(object):
         get_value = lambda key: legal_moves[key]
         best_point = max(legal_moves, key=get_value)  # column값(key) 나옴
 
-        print(best_point, legal_moves[best_point])
+       # print(best_point, legal_moves[best_point])
 
         messages = {
             0: "Rule 1: If there is a winning move, take it.",
