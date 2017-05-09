@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 from Solver import Solver
 
@@ -16,6 +17,14 @@ class Game(object):
         self.phase = 1
         self.finished = False
         self.winner = None
+
+        self.newGame()
+
+    def newGame(self):
+        self.phase = 1
+        self.finished = False
+        self.winner = None
+        self.players[0] = None
 
         print("Do you go first or second?")
 
@@ -37,19 +46,6 @@ class Game(object):
         print("Player 1 is {0}".format(self.colors[0]))
         print("Player 2 is {0}".format(self.colors[1]))
 
-        self.turn = self.players[0]
-
-        self.board = []
-        for i in range(6):
-            self.board.append([])
-            for j in range(7):
-                self.board[i].append(' ')
-
-    def newGame(self):
-
-        self.phase = 1
-        self.finished = False
-        self.winner = None
         self.turn = self.players[0]
 
         self.board = []
