@@ -130,7 +130,7 @@ class Solver(object):
             3: "Rule 4: If the opponent can connect 3, interfere it.",
             4: "Rule 5: If my square can be connected for 2, make it.",
             5: "Rule 6: If the opponent can connect 2, interfere it.",
-            6: "Rule 7: Put the stone in a square at odd row.",
+            6: "Rule 7: Put the stone in a square at odd row (except for the first)",
             7: "Rule 8: Place a stone at center, or corner if not possible"
         }
 
@@ -171,7 +171,7 @@ class Solver(object):
         if connectTwo:
             flag[4] += 1
 
-        if row % 2 == 0 :
+        if row == 2 or 4:
             flag[6] += 1
 
         if column == 3 :
@@ -185,10 +185,10 @@ class Solver(object):
             if self.isLegalMove(column, board):
                 _, temp_board = self.make_move2(board, column, enemyPlayer)
 
-                if enemyPlayer == self.colors[0]:
-                    currentPlayer = self.colors[1]
-                else:
-                    currentPlayer = self.colors[0]
+                # if enemyPlayer == self.colors[0]:
+                #     currentPlayer = self.colors[1]
+                # else:
+                #     currentPlayer = self.colors[0]
 
                 rule_enemy_tuples = ((1, 4), (3, 3), (5,2))
                 for rule, consecutive in rule_enemy_tuples:
